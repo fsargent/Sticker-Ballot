@@ -1,0 +1,27 @@
+{
+  "name": "sticker-voting",
+  "version": "1.0.0",
+  "description": "Inexpensive, fraud resistant voting",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fsargent/sticker-voting.git"
+  },
+  "keywords": [
+    "voting"
+  ],
+  "author": "Felix Sargent",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fsargent/sticker-voting/issues"
+  },
+  "homepage": "https://github.com/fsargent/sticker-voting#readme",
+  "dependencies": {
+    "pdfmake": "^0.1.54",
+    "qrcode": "^1.3.3",
+    "shortid": "^2.2.14"
+  }
+}
