@@ -1,140 +1,9 @@
 const PdfPrinter = require('pdfmake');
 const fs = require('fs');
-// const sticker = require('./sticker');
+const shortid = require('shortid');
+const template = require('./template');
+const { avery22806 } = require('./template');
 
-// const publicKey = fs.readFileSync('public.key').toString('ascii');
-
-const avery22806 = {
-  content: [
-    {
-      style: 'avery22806',
-      table: {
-        layout: {
-          hLineWidth(i, node) {
-            return i === 0 || i === node.table.body.length ? 2 : 1;
-          },
-          vLineWidth(i, node) {
-            return i === 0 || i === node.table.widths.length ? 2 : 1;
-          },
-          hLineColor(i, node) {
-            return i === 0 || i === node.table.body.length ? 'black' : 'gray';
-          },
-          vLineColor(i, node) {
-            return i === 0 || i === node.table.widths.length ? 'black' : 'gray';
-          },
-          // hLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
-          // vLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
-          // paddingLeft: function(i, node) { return 4; },
-          // paddingRight: function(i, node) { return 4; },
-          // paddingTop: function(i, node) { return 2; },
-          // paddingBottom: function(i, node) { return 2; },
-          // fillColor: function (rowIndex, node, columnIndex) { return null; }
-        },
-        widths: [135, 36, 135, 36, 135],
-        heights: [135, 36, 135, 36, 135, 36, 135],
-        body: [
-          [
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-            '',
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-            '',
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-          ],
-          ['', '', '', '', ''],
-          [
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-            '',
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-            '',
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-          ],
-          ['', '', '', '', ''],
-          [
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-            '',
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-            '',
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-          ],
-          ['', '', '', '', ''],
-          [
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-            '',
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-            '',
-            {
-              stack: [
-                { qr: 'text in QR', alignment: 'center' },
-                { text: 'Felix Sargent', alignment: 'center' },
-              ],
-            },
-          ],
-          ['', '', '', '', ''],
-        ],
-      },
-    },
-  ],
-  pageMargins: [45, 45, 41, 22.3],
-  pageSize: 'LETTER',
-  defaultStyle: {
-    // alignment: 'justify'
-  },
-};
 
 const fonts = {
   Roboto: {
@@ -147,6 +16,52 @@ const fonts = {
 
 const printer = new PdfPrinter(fonts);
 
-const pdfDoc = printer.createPdfKitDocument(avery22806);
+const options = {
+  name: 'Wonder Woman', measure: 'President', measure_id: 1, option_id: 1,
+};
+
+const election150823 = {
+  election_id: 150823,
+  measures: [
+    {
+      measure_id: 123,
+      measure_name: 'Representative, District 6',
+      candidates: [
+        { name: 'Felix Sargent', id: 15231 },
+        { name: 'Simeon Jewell', id: 512 },
+        { name: 'Steve Caires', id: 1341 },
+        { name: 'Donna Summer', id: 112423 },
+        { name: 'Chuck Davis', id: 1213 },
+        { name: 'Michael Donner', id: 123152 },
+        { name: 'Craig Charles', id: 4564 },
+        { name: 'Screaming Lord Such', id: 2523 },
+      ],
+    },
+  ],
+};
+
+
+const ballotId = shortid.generate();
+
+function generateBallot(ballot, election) {
+  election.measures.forEach((measure) => {
+    measure.candidates.forEach((candidate, index) => {
+      template.updateTemplate(
+        ballot, index, {
+          name: candidate.name,
+          option_id: candidate.id,
+          measure: measure.measure_name,
+          measure_id: measure.measure_id,
+        },
+        ballotId,
+      );
+    });
+  });
+  return ballot;
+}
+
+console.log(generateBallot(avery22806, election150823));
+
+const pdfDoc = printer.createPdfKitDocument(generateBallot(avery22806, election150823));
 pdfDoc.pipe(fs.createWriteStream('document.pdf'));
 pdfDoc.end();
