@@ -12,18 +12,12 @@ For each ballot:
 - Generate a Ballot Sheet, with a unique ID
 - Generate a Sticker Sheet with a Sticker for each option
   - Each sticker has both the text, and a digitally signed QR code that includes
-    - The QR Code includes:
-      - Sticker UUID
-      - Ballot UUID
-      - If Measure:
-        - Measure Name
-        - Measure UUID
-        - Affirm / Reject
-      - If Candidate:
-        - Election UUID (One candidate may be in two races)
-        - Candidate UUID
-        - Candidate Name
-      - Digital Signature
+    - Ballot Id
+    - Measure Name (The name of the race, ie "Measure C" or "Office of the President")
+    - Measure Id
+    - Option Name (ie, candidate name or "Yes/No" for a Measure )
+    - Option Id
+    - Digital Signature
 
 Output:
 X Ballot Sheets

@@ -1,9 +1,7 @@
 const PdfPrinter = require('pdfmake');
 const fs = require('fs');
-const shortid = require('shortid');
-const template = require('./template');
-const { avery22806 } = require('./template');
-
+const generateStickerSheet = require('./templates/avery94207');
+const generateBallotSheet = require('./templates/ballotSheet');
 
 const fonts = {
   Roboto: {
@@ -16,10 +14,6 @@ const fonts = {
 
 const printer = new PdfPrinter(fonts);
 
-const options = {
-  name: 'Wonder Woman', measure: 'President', measure_id: 1, option_id: 1,
-};
-
 const election150823 = {
   election_id: 150823,
   measures: [
@@ -27,41 +21,23 @@ const election150823 = {
       measure_id: 123,
       measure_name: 'Representative, District 6',
       candidates: [
-        { name: 'Felix Sargent', id: 15231 },
-        { name: 'Simeon Jewell', id: 512 },
-        { name: 'Steve Caires', id: 1341 },
-        { name: 'Donna Summer', id: 112423 },
-        { name: 'Chuck Davis', id: 1213 },
-        { name: 'Michael Donner', id: 123152 },
-        { name: 'Craig Charles', id: 4564 },
-        { name: 'Screaming Lord Such', id: 2523 },
+        { name: 'Wonder Woman', id: 15231 },
+        { name: 'Batman', id: 512 },
+        { name: 'Superman', id: 1341 },
+        { name: 'Rogue', id: 112423 },
+        { name: 'Black Panther', id: 1213 },
+        { name: 'Godzilla', id: 123152 },
+        { name: 'Lex Luther', id: 4564 },
+        { name: 'Mr Freeze', id: 2523 },
       ],
     },
   ],
 };
 
-
-const ballotId = shortid.generate();
-
-function generateBallot(ballot, election) {
-  election.measures.forEach((measure) => {
-    measure.candidates.forEach((candidate, index) => {
-      template.updateTemplate(
-        ballot, index, {
-          name: candidate.name,
-          option_id: candidate.id,
-          measure: measure.measure_name,
-          measure_id: measure.measure_id,
-        },
-        ballotId,
-      );
-    });
-  });
-  return ballot;
-}
-
-console.log(generateBallot(avery22806, election150823));
-
-const pdfDoc = printer.createPdfKitDocument(generateBallot(avery22806, election150823));
-pdfDoc.pipe(fs.createWriteStream('document.pdf'));
+const pdfDoc = printer.createPdfKitDocument(generateStickerSheet(election150823));
+pdfDoc.pipe(fs.createWriteStream('stickers.pdf'));
 pdfDoc.end();
+
+const ballot = printer.createPdfKitDocument(generateBallotSheet());
+ballot.pipe(fs.createWriteStream('ballot.pdf'));
+ballot.end();
